@@ -1,26 +1,28 @@
 /**
  * Created by xby on 16/1/15.
  */
-(function () {
-	var  initializing = false,
-		 superPattern =
-			 /xyz/.test(function() { xyz;}) ? /\b_super\b/ : /.*/;
+(function() {
+	var initializing = false,
+		superPattern =
+		/xyz/.test(function() {
+			xyz;
+		}) ? /\b_super\b/ : /.*/;
 
-	this.Class = function () {}; // 全局的Class
+	this.Class = function() {}; // 全局的Class
 
-	Class.extend = function (properties) {
+	Class.extend = function(properties) {
 		var _super = this.prototype; // （继承自的对象的）原型--->父类
 
 		initializing = true;
 		var prototype = new this(); // 继承自的对象--->子类
 		initializing = false;
 
-		for(var name in properties) {
+		for (var name in properties) {
 			prototype[name] = typeof properties[name] === 'function' &&
-					          typeof _super[name] === 'function' &&
-			                  superPattern.test(properties[name]) ?
-				(function (name, fn) { // 定义一个重载函数
-					return function () {
+				typeof _super[name] === 'function' &&
+				superPattern.test(properties[name]) ?
+				(function(name, fn) { // 定义一个重载函数
+					return function() {
 						var tmp = this._super;
 
 						this._super = _super[name];
@@ -31,8 +33,7 @@
 
 						return ret;
 					}
-				})(name, properties[name])
-				:
+				})(name, properties[name]) :
 				properties[name];
 		}
 
@@ -43,7 +44,7 @@
 		 */
 		function Class() {
 			// 所有的构造器会在初始化方法里完成
-			if(!initializing && this.init) {
+			if (!initializing && this.init) {
 				this.init.apply(this, arguments);
 			}
 		}
@@ -65,19 +66,19 @@
 
 // 高级的继承方式
 var Person = Class.extend({
-	init: function (isSleep) {
+	init: function(isSleep) {
 		this.isSleep = isSleep;
 	},
-	sleep : function () {
+	sleep: function() {
 		return this.isSleep;
 	}
 });
 
 var Ninja = Person.extend({
-	init: function () {
+	init: function() {
 		this._super(false);
 	},
-	swingSword: function () {
+	swingSword: function() {
 		return true;
 	}
 });
