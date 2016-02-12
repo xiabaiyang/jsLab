@@ -55,7 +55,7 @@
      // 版本声明
      _.VERSION = '1.3.3';
 
-    //在_对象上定义各种方法
+    //在_对象上定义各种工具方法（下回分解）
     . . . . . .
 
      // underscore对象的包装函数
@@ -119,7 +119,7 @@
 
      // 对Underscore对象进行链式操作的声明方法
      wrapper.prototype.chain = function() {
-         // this._chain用来标示当前对象是否使用链式操作
+         // this._chain用来标示当前对象是否支持链式操作
          // 对于支持方法链操作的数据, 一般在具体方法中会返回一个Underscore对象, 并将原始值存放在_wrapped属性中, 也可以通过value()方法获取原始值
          this._chain = true;
          return this;
