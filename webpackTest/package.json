@@ -9,6 +9,8 @@
   "author": "xby",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.3",
     "css-loader": "^0.23.1",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.14"
