@@ -82,5 +82,103 @@ var systemFunction = {
             }
         }
         return result;
+    },
+    /**
+     * [trim 去除字符串前后的空格]
+     * @param  {[type]} str [description]
+     * @return {[type]}     [description]
+     */
+    trim: function(str) {
+        if(str && typeof str === "string") {
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+        }
+    },
+    /**
+     * [clone 支持 Number、String、Object、Array、Boolean类型的克隆]
+     * @param  {[type]} obj [description]
+     * @return {[type]}     [description]
+     */
+    function clone(obj) {
+        var o;
+        switch (typeof obj) {
+            case "undefined":
+                break;
+            case "string":
+                o = obj + "";
+                break;
+            case "number":
+                o = obj - 0;
+                break;
+            case "boolean":
+                o = obj;
+                break;
+            case "object": // object 分为两种情况 对象（Object）或数组（Array）
+                if (obj === null) {
+                    o = null;
+                } else {
+                    if (Object.prototype.toString.call(obj).slice(8, -1) === "Array") { // [object Array]
+                        o = [];
+                        for (var i = 0; i < obj.length; i++) {
+                            o.push(clone(obj[i]));
+                        }
+                    } else {
+                        o = {};
+                        for (var k in obj) {
+                            o[k] = clone(obj[k]);
+                        }
+                    }
+                }
+                break;
+            default:
+                o = obj;
+                break;
+        }
+        return o;
+    },
+    /**
+     * [calculateMostCharCount 计算一个字符串中出现次数最多的字符数]
+     * @param  {[type]} str [description]
+     * @return {[type]}     [description]
+     */
+    calculateMostCharCount: function(str) {
+        var obj = {};
+        for(var i = 0; i < str.length; i++){
+            var v = str.charAt(i);
+            if(obj[v] && obj[v].value == v){
+                obj[v].count = ++ obj[v].count;
+            }else{
+                obj[v] = {};
+                obj[v].count = 1;
+                obj[v].value = v;
+            }
+        }
+        for(key in obj){
+            console.log(obj[key].value + '=' + obj[key].count + ' '); // a=4  b=3  c=4  d=2  f=1  g=1  h=1
+        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };

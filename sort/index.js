@@ -9,11 +9,9 @@ Sort.prototype = {
     },
     // 冒泡排序  
     bubbleSort: function(array) {
-        var i = 0,
-            len = array.length,
-            j, d;
-        for (; i < len; i++) {
-            for (j = 0; j < len; j++) {
+        var d;
+        for (var i = 0, len = array.length; i < len; i++) {
+            for (var j = 0; j < len; j++) {
                 if (array[i] < array[j]) {
                     d = array[j];
                     array[j] = array[i];
@@ -24,30 +22,22 @@ Sort.prototype = {
         return array;
     },
     // 快速排序  
-    quickSort: function partition(items, left, right) {
-      // 交换函数
-      function swap(a, b){
-          var temp = a;
-          a = b;
-          b = temp;
-      }
-      var pivot = items[Math.floor((right + left) / 2)], // 基准值
-          i = left,
-          j = right;
-      while (i <= j) {
-        while (items[i] < pivot) {
-            i++;
+    quickSort: function(arr) {
+　　　　　if (arr.length <= 1) { 
+            return arr; 
         }
-        while (items[j] > pivot) {
-            j--;
-        }
-        if (i <= j) {
-            swap(items[i], items[j]);
-            i++;
-            j--;
-        }
-      }
-      return i;
+　　　　 var pivotIndex = Math.floor(arr.length / 2);
+　　　　 var pivot = arr.splice(pivotIndex, 1)[0];
+　　　　 var left = [];
+　　　　 var right = [];
+　　　　 for (var i = 0; i < arr.length; i++){
+　　　　    if (arr[i] < pivot) {
+　　　　　　      left.push(arr[i]);
+　　　　　　 } else {
+　　　　　　      right.push(arr[i]);
+　　　　　　 }
+　　　　 }
+　　　　 return quickSort(left).concat([pivot], quickSort(right));
     },
     // 插入排序  
     insertSort: function(array) {
