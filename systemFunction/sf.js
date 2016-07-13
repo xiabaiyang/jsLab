@@ -5,12 +5,14 @@ var systemFunction = {
         F.prototype = o;
         return new F();
     },
+
     // 基本的绑定Bind
     easyBind: function(obj, fn) {
         return function() {
             fn.apply(obj, arguments);
         }
     },
+
     // MDN实现的polyfill绑定
     bind: function(oThis) { // 实参还会有很多，oThis只是需要绑定的必须参数
         if (!Function.prototype.bind) {
@@ -32,6 +34,7 @@ var systemFunction = {
             return fnBound;
         }
     },
+
     // softBind
     // 使用赢绑定之后就无法使用隐绑定或者显式绑定修改this的值，降低了灵活性
     softBind: function(obj) {
@@ -48,6 +51,7 @@ var systemFunction = {
         bound.prototype = Object.create(fnToBound.prototype);
         return bound;
     },
+
     // 数组去重
     unique: function(array) {
         var l = array.length;
@@ -70,6 +74,7 @@ var systemFunction = {
             return temp;
         }
     },
+
     // 采取hashTable的方式
     quickUnique: function(array) {
         var hash = {},
@@ -83,6 +88,7 @@ var systemFunction = {
         }
         return result;
     },
+
     /**
      * [trim 去除字符串前后的空格]
      * @param  {[type]} str [description]
@@ -93,6 +99,7 @@ var systemFunction = {
             return str.replace(/(^\s*)|(\s*$)/g, "");
         }
     },
+
     /**
      * [clone 支持 Number、String、Object、Array、Boolean类型的克隆]
      * @param  {[type]} obj [description]
@@ -135,6 +142,7 @@ var systemFunction = {
         }
         return o;
     },
+
     /**
      * [calculateMostCharCount 计算一个字符串中出现次数最多的字符数]
      * @param  {[type]} str [description]
@@ -155,7 +163,163 @@ var systemFunction = {
         for(key in obj){
             console.log(obj[key].value + '=' + obj[key].count + ' '); // a=4  b=3  c=4  d=2  f=1  g=1  h=1
         }
-    }
+    },
+
+    /**
+     * [formatParams 格式化参数]
+     * @param  {[type]} data [description]
+     * @return {[type]}      [description]
+     */
+    formatParams: function (data) {
+        var arr = [];
+        for (var name in data) {
+            arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+        }
+        arr.push(("v=" + Math.random()).replace("."));
+        return arr.join("&");
+    },
+
+    /**
+     * [ajax AJAX请求]
+     * @param  {[type]} options [description]
+     * @return {[type]}         [description]
+     * 调用方式
+     * ajax({
+            url: "./TestXHR.aspx",              //请求地址        
+            type: "POST",                       //请求方式        
+            data: { name: "super", age: 20 },        //请求参数        
+            dataType: "json",
+            success: function (response, xml) {
+                // 此处放成功后执行的代码        
+            },
+            fail: function (status) {
+                // 此处放失败后执行的代码        
+            }
+        });
+     */
+    ajax: function (options) {
+        options = options || {};
+        options.type = (options.type || "GET").toUpperCase();
+        options.dataType = options.dataType || "json";
+        var params = formatParams(options.data);
+
+        //创建 - 非IE6 - 第一步        
+        if (window.XMLHttpRequest) {
+            var xhr = new XMLHttpRequest();
+        } 
+        else { 
+            // IE6及其以下版本浏览器            
+            var xhr = new ActiveXObject('Microsoft.XMLHTTP');
+        }
+
+        //接收 - 第三步        
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                var status = xhr.status;
+                if (status >= 200 && status < 300) {
+                    options.success && options.success(xhr.responseText, xhr.responseXML);
+                } else {
+                    options.fail && options.fail(status);
+                }
+            }
+        }
+
+        //连接 和 发送 - 第二步        
+        if (options.type == "GET") {
+            xhr.open("GET", options.url + "?" + params, true);
+            xhr.send(null);
+        } else if (options.type == "POST") {
+            xhr.open("POST", options.url, true);
+            //设置表单提交时的内容类型            
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(params);
+        }
+    },
+
+    /**
+     * [jsonp jsonp]
+     * @param  {[type]} options [description]
+     * @return {[type]}         [description]
+     */
+    jsonp: function (options) {
+        options = options || {};
+        if (!options.url || !options.callback) {
+            throw new Error("参数不合法");
+        }
+
+        //创建 script 标签并加入到页面中        
+        var callbackName = ('jsonp_' + Math.random()).replace(".", "");
+        var oHead = document.getElementsByTagName('head')[0];
+        options.data[options.callback] = callbackName;
+        var params = formatParams(options.data);
+        var oS = document.createElement('script');
+        oHead.appendChild(oS);
+
+        //创建jsonp回调函数        
+        window[callbackName] = function (json) {
+            oHead.removeChild(oS);
+            clearTimeout(oS.timer);
+            window[callbackName] = null;
+            options.success && options.success(json);
+        };
+
+        //发送请求        
+        oS.src = options.url + '?' + params;
+
+        //超时处理        
+        if (options.time) {
+            oS.timer = setTimeout(function () {
+                window[callbackName] = null;
+                oHead.removeChild(oS);
+                options.fail && options.fail({ message: "超时" });
+            }, time);
+        }
+    },
+
+    /**
+     * [ready ready]
+     * @param  {[type]} readyFn [description]
+     * @return {[type]}         [description]
+     */
+    ready: function (readyFn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', function () {
+                readyFn && readyFn();
+            }, false);
+        } 
+        else {
+            var bReady = false; // 方案1和2,哪个快用哪一个            
+            document.attachEvent('onreadystatechange', function () { 
+                if (bReady) {
+                    return;
+                }
+                if (document.readyState == 'complete' || document.readyState == "interactive")                {
+                    bReady = true;
+                    readyFn && readyFn();
+                };
+            });
+
+            if (!window.frameElement) { // 方案2, jquery也会担心doScroll会在iframe内失效，此处是判断当前页是否被放在了iframe里
+                setTimeout(checkDoScroll, 1);
+            }
+
+            function checkDoScroll() {
+                try {
+                    document.documentElement.doScroll("left");
+                    if (bReady) {
+                        return;
+                    }
+                    bReady = true;
+                    readyFn && readyFn();
+                }
+                catch (e) {               
+                    setTimeout(checkDoScroll, 1); // 不断检查 doScroll 是否可用 - DOM结构是否加载完成     
+                }
+            };
+        }
+    };
+
+    
 
 
 

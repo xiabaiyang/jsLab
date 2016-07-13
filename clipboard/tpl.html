@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <style type="text/css">
+      #clip_button {
+        text-align: center;
+        border: 1px solid black;
+        background-color: #ccc;
+        margin: 10px;
+        padding: 10px;
+      }
+      #clip_button:hover { 
+        background-color: #eee; 
+      }
+      #clip_button:active { 
+        background-color: #aaa; 
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript" src="./clipboard.min.js"></script>
+
+    <!-- Target -->
+    <textarea id="bar">Mussum ipsum cacilds...</textarea>
+
+    <!-- Trigger -->
+    <button class="btn" data-clipboard-action="cut" data-clipboard-target="#bar">
+        Cut to clipboard
+    </button>
+
+    <script type="text/javascript">
+      
+      var clipboard = new Clipboard('.btn');
+
+      clipboard.on('success', function(e) {
+          console.info('Action:', e.action);
+          console.info('Text:', e.text);
+          console.info('Trigger:', e.trigger);
+
+          e.clearSelection();
+      });
+
+      clipboard.on('error', function(e) {
+          console.error('Action:', e.action);
+          console.error('Trigger:', e.trigger);
+      });
+
+    </script>
+  </body>
+</html>

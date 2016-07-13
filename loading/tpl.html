@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+ <html class="no-js"> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>DEMO3</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="css/fakeLoader.css">
+    </head>
+    <body>
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+        <div class="fakeloader"></div>
+
+        <div class="container text-center">
+            <h1 style="margin-top:250px">DOM was loaded</h1>
+        </div>
+        
+        <script src="js/jquery.min.js"></script>
+        <script src="js/fakeLoader.min.js"></script>
+        <script>
+            $(document).ready(function(){
+
+                $(".fakeloader").fakeLoader({
+                    timeToHide: 10000,
+                    bgColor:"#3498db",
+                    spinner:"spinner2"
+                });
+
+                setTimeout(function() {
+                    $(".fakeloader").fadeOut();
+                }, 3000);
+            });
+        </script>
+
+    </body>
+</html>
