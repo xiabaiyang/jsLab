@@ -3,6 +3,41 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>JS实验室</title>
+    <script type="text/javascript">
+    	function people( name) {
+    		this.name = name;
+    	}
+
+    	people.prototype.bind = function(oThis) { // 实参还会有很多，oThis只是需要绑定的必须参数
+	        if (!Function.prototype.bind) {
+	            if (typeof this !== 'function') { // 这里的this是调用bind函数的那个对象
+	                throw new TypeError("Function.prototype.bind - what is tring" + "to be bound is not callable");
+	            }
+	            var aArgs = [].slice.call(arguments, 1); // 保存除需要绑定this之外的参数
+	            var fnToBind = this;
+	            var fnNOP = function() {}; // 临时中转函数，防止继承函数的prototye改变，被继承函数的prototye也被改变
+	            var fnBound = function() {
+	                return fnToBind.apply(
+	                    // 判断硬绑定函数是否是被 new 调用，如果是的话就会使用新创建的 this 替换赢绑定的this
+	                    (this instanceof fnNOP && oThis ? this : oThis), // new修改this的代码1
+	                    aArgs.concat([].slice.call(arguments)));
+	            };
+	            fnNOP.prototype = this.prototype; // new修改this的代码2
+	            fnBound.prototype = new FnNOP();
+	            // fnBound.prototype = Object.create(fnToBind.prototype);
+	            return fnBound;
+	        }
+		};
+
+    	var a = {};
+    	var b = people.bind(a);
+    	b('xby');
+    	console.log(a.name); // xby
+
+    	var c = new b('cm');
+    	console.log(c.name); // cm
+    	console.log(a.name); // xby
+    </script>
 </head>
 <body>
 <p>开始神奇的JS之旅，立志成为JS Ninja</p>
